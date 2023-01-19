@@ -25,7 +25,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Sample.Sprints.Sprint1
                 xrmApp.OnlineLogin.Login(_xrmUri, _username, _password, _mfaSecretKey);
 
                 xrmApp.Navigation.OpenApp(UCIAppName.Sales);
-
                 xrmApp.Navigation.OpenSubArea("Sales", "Accounts");
                 xrmApp.CommandBar.ClickCommand("New");
                 String BusinessName = "Test Account";
