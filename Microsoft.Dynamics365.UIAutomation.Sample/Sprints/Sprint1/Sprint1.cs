@@ -27,7 +27,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Sample.Sprints.Sprint1
                 xrmApp.Navigation.OpenApp(UCIAppName.Sales);
 
                 xrmApp.Navigation.OpenSubArea("Sales", "Accounts");
-
                 xrmApp.CommandBar.ClickCommand("New");
                 String BusinessName = "Test Account";
                 HelperMethods.CreateTestAccount(xrmApp, BusinessName);
