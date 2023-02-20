@@ -29,6 +29,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>7.2</LangVersion>
+    <DocumentationFile>
+    </DocumentationFile>
+    <RegisterForComInterop>false</RegisterForComInterop>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -40,22 +43,75 @@
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DnsClient, Version=1.0.7.0, Culture=neutral, PublicKeyToken=4574bb5573c51424, processorArchitecture=MSIL">
+      <HintPath>..\packages\DnsClient.1.0.7\lib\net45\DnsClient.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus.Interfaces, Version=6.1.1.0, Culture=neutral, PublicKeyToken=a694d7f3b0907a61, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.Interfaces.6.1.1\lib\net35\EPPlus.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus.System.Drawing, Version=6.1.1.0, Culture=neutral, PublicKeyToken=2308d35469c9bac0, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.System.Drawing.6.1.1\lib\net35\EPPlus.System.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.3.6.0\lib\net45\ExcelDataReader.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader.DataSet, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.DataSet.3.6.0\lib\net35\ExcelDataReader.DataSet.dll</HintPath>
+    </Reference>
+    <Reference Include="ExtentReports, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExtentReports.4.0.0\lib\ExtentReports.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.ApplicationInsights, Version=2.11.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.2.11.0\lib\net46\Microsoft.ApplicationInsights.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=2.22.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.22.302111727\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms, Version=2.22.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.22.302111727\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xrm.Sdk, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Xrm.Sdk.2015.7.1.0.1085\lib\net452\Microsoft.Xrm.Sdk.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xrm.Sdk.Deployment, Version=8.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CrmSdk.Deployment.8.0.0\lib\net45\Microsoft.Xrm.Sdk.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xrm.Sdk.Workflow, Version=8.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CrmSdk.Workflow.8.0.0\lib\net45\Microsoft.Xrm.Sdk.Workflow.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xrm.Tooling.Connector, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CrmSdk.XrmTooling.CoreAssembly.8.0.0\lib\net45\Microsoft.Xrm.Tooling.Connector.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Bson, Version=2.7.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Bson.2.7.2\lib\net45\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver, Version=2.7.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Driver.2.7.2\lib\net45\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver.Core, Version=2.7.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Driver.Core.2.7.2\lib\net45\MongoDB.Driver.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="RazorEngine, Version=3.10.0.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL">
+      <HintPath>..\packages\RazorEngine.3.10.0\lib\net45\RazorEngine.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Activities" />
+    <Reference Include="System.Activities.Presentation" />
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard1.1\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.6.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard1.1\System.Memory.dll</HintPath>
     </Reference>
@@ -63,13 +119,26 @@
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.0.0\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Workflow.Activities" />
+    <Reference Include="System.Workflow.ComponentModel" />
+    <Reference Include="System.Workflow.Runtime" />
+    <Reference Include="System.Xml" />
     <Reference Include="WebDriver, Version=3.141.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Selenium.WebDriver.3.141.0\lib\net45\WebDriver.dll</HintPath>
     </Reference>
     <Reference Include="WebDriver.Support, Version=3.141.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Selenium.Support.3.141.0\lib\net45\WebDriver.Support.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -86,175 +155,25 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AzureDevOps\UCI\CreateAccount.cs" />
-    <Compile Include="SharedAPI\AzureInsights\UploadTelemetryUCI.cs" />
-    <Compile Include="SharedAPI\AzureInsights\OpenLead.cs" />
-    <Compile Include="SharedAPI\BrowserTests\BrowserTests.cs" />
-    <Compile Include="UCI\ApiTests\BrowserCommand_Tests.cs" />
-    <Compile Include="UCI\ApiTests\TestsBase_Tests.cs" />
-    <Compile Include="UCI\BusinessProcessFlow\BusinessProcessFlowNextStage.cs" />
-    <Compile Include="UCI\BusinessProcessFlow\SwitchBusinessProcessFlow.cs" />
-    <Compile Include="UCI\CommandBar\CommandButton.cs" />
-    <Compile Include="UCI\CommandBar\AssignAccount.cs" />
-    <Compile Include="UCI\CommandBar\CloseOpportunity.cs" />
-    <Compile Include="UCI\CommandBar\DuplicateDetection.cs" />
-    <Compile Include="UCI\CommandBar\SelectDashboard.cs" />
     <Compile Include="ConsoleTraceListener.cs" />
-    <Compile Include="UCI\Controls\Grid.cs" />
-    <Compile Include="UCI\Create\CreateAccount.cs" />
-    <Compile Include="UCI\Create\CreateCase.cs" />
-    <Compile Include="UCI\Create\CreateContact.cs" />
-    <Compile Include="UCI\Create\CreateLead.cs" />
-    <Compile Include="UCI\Create\CreateActivity.cs" />
-    <Compile Include="UCI\Create\CreateOpportunity.cs" />
-    <Compile Include="UCI\Login\LoginWhitoutTestBase.cs" />
-    <Compile Include="UCI\Navigation\AreasAndSubAreas.cs" />
-    <Compile Include="UCI\FormNotifications\ReadFormNotifications.cs" />
-    <Compile Include="UCI\Labs\TestsBase\1_Lab_TestsClass.cs" />
-    <Compile Include="UCI\Labs\TestsBase\3_Lab_TestsBase_CreateApp.cs" />
-    <Compile Include="UCI\Labs\TestsBase\2_Lab_TestsBase_ReadConfigParameters.cs" />
-    <Compile Include="UCI\Labs\TestsBase\4_Lab_TestsBase_CreateApp_AllTestsUsesDefaultOptions.cs" />
-    <Compile Include="UCI\Labs\TestsBase\5_Lab_TestsBase_CreateApp_AllTestsUsesMyCustomOptions.cs" />
-    <Compile Include="UCI\Labs\TestsBase\6_Lab_TestsBase_CreateApp_NavigateToSameApp_InAllTests.cs" />
-    <Compile Include="UCI\Labs\TestsBase\7_Lab_TestsBase_CreateApp_NavigateToSameArea_InAllTests.cs" />
-    <Compile Include="UCI\Labs\TestsBase\0_Lab_TestsBase_QuickStart.cs" />
-    <Compile Include="UCI\Labs\TestsBase\TestsBase.cs" />
-    <Compile Include="UCI\Delete\DeleteAccount.cs" />
-    <Compile Include="UCI\Delete\DeleteCase.cs" />
-    <Compile Include="UCI\Delete\DeleteContact.cs" />
-    <Compile Include="UCI\Delete\DeleteLead.cs" />
-    <Compile Include="UCI\Delete\DeleteOpportunity.cs" />
-    <Compile Include="UCI\GetValue.cs" />
-    <Compile Include="UCI\GlobalSearch\GlobalCategorizedSearch.cs" />
-    <Compile Include="UCI\GlobalSearch\GlobalRelevanceSearch.cs" />
-    <Compile Include="UCI\Login\Login.cs" />
-    <Compile Include="UCI\Navigation\FormSelector.cs" />
-    <Compile Include="UCI\Navigation\GlobalSearch.cs" />
-    <Compile Include="UCI\Navigation\GoBackUCI.cs" />
-    <Compile Include="UCI\Navigation\OpenNavigation.cs" />
-    <Compile Include="UCI\Navigation\PortalAdmin.cs" />
-    <Compile Include="UCI\QuickCreate\QuickCreate.cs" />
-    <Compile Include="UCI\Validate\CheckFieldRequired.cs" />
-    <Compile Include="UCI\Read\HighlightAccount.cs" />
-    <Compile Include="UCI\Read\OpenAccount.cs" />
-    <Compile Include="UCI\Read\OpenCase.cs" />
-    <Compile Include="UCI\Read\OpenContact.cs" />
-    <Compile Include="UCI\Read\OpenLead.cs" />
-    <Compile Include="UCI\Read\OpenOpportunity.cs" />
-    <Compile Include="UCI\SetValue.cs" />
-    <Compile Include="UCI\SpecialConfigurationTests\RandomAccountTest.cs" />
-    <Compile Include="UCI\Timeline\AddActivity.cs" />
-    <Compile Include="UCI\Timeline\AddNote.cs" />
-    <Compile Include="UCI\Timeline\AddPost.cs" />
-    <Compile Include="UCI\Update\UpdateAccount.cs" />
-    <Compile Include="UCI\Update\UpdateCase.cs" />
-    <Compile Include="UCI\Update\UpdateContact.cs" />
-    <Compile Include="UCI\Update\UpdateLead.cs" />
-    <Compile Include="UCI\Update\UpdateOpportunity.cs" />
-    <Compile Include="Web\BusinessProcessFlow\BusinessProcessFlow.cs" />
-    <Compile Include="Web\CommandBar\CommandButton.cs" />
-    <Compile Include="Web\Delete\DeleteAccount.cs" />
-    <Compile Include="Web\Delete\DeleteCase.cs" />
-    <Compile Include="Web\Delete\DeleteContact.cs" />
-    <Compile Include="Web\Delete\DeleteLead.cs" />
-    <Compile Include="Web\Delete\DeleteOpportunity.cs" />
-    <Compile Include="Web\Dialogs\CloseWarning.cs" />
-    <Compile Include="Web\AddConnection.cs" />
-    <Compile Include="Web\Entity\SubGrid.cs" />
-    <Compile Include="Web\Entity\TestBase.cs" />
-    <Compile Include="Web\Entity\Account.cs" />
-    <Compile Include="Web\Navigation\AreasAndSubAreas.cs" />
-    <Compile Include="Web\ValidationTests\CreateUser.cs" />
-    <Compile Include="Web\ValidationTests\CreateWorkflow.cs" />
-    <Compile Include="Web\ValidationTests\OpenO365App.cs" />
-    <Compile Include="Web\ValidationTests\ValidationVersion.cs" />
-    <Compile Include="Web\Create\CreateCase.cs" />
-    <Compile Include="Web\DashBoard\Dashboard.cs" />
-    <Compile Include="Web\Dialogs\Assign.cs" />
-    <Compile Include="Web\Dialogs\CloseOpportunity.cs" />
-    <Compile Include="Web\Dialogs\Delete.cs" />
-    <Compile Include="Web\Dialogs\DuplicateDetection.cs" />
-    <Compile Include="Web\Dialogs\RunWorkFlow.cs" />
-    <Compile Include="Web\Dialogs\SelectBusinessProcessFlow.cs" />
-    <Compile Include="Web\Create\CreateAccount.cs" />
-    <Compile Include="Web\Create\CreateContact.cs" />
-    <Compile Include="Web\Create\CreateLead.cs" />
-    <Compile Include="Web\Create\CreateOpportunity.cs" />
-    <Compile Include="Web\EndUserScenerio.cs" />
-    <Compile Include="Web\LeadSubgrid.cs" />
-    <Compile Include="Web\Read\OpenAccount.cs" />
-    <Compile Include="Web\Read\OpenContact.cs" />
-    <Compile Include="Web\Read\OpenLead.cs" />
-    <Compile Include="Web\Read\OpenOpportunity.cs" />
-    <Compile Include="Web\QuickCreate\QuickCreateAccount.cs" />
-    <Compile Include="Web\RelatedTest.cs" />
-    <Compile Include="Web\Entity\Entity.cs" />
-    <Compile Include="Web\Entity\GetValue.cs" />
-    <Compile Include="Web\Entity\RecordWall.cs" />
-    <Compile Include="Web\Entity\SetValue.cs" />
-    <Compile Include="Web\GlobalSearch\GlobalSearchXrm.cs" />
-    <Compile Include="Web\Navigation\AdvancedFind.cs" />
-    <Compile Include="Web\Navigation\GlobalSearch.cs" />
-    <Compile Include="Web\Navigation\GuidedHelp.cs" />
-    <Compile Include="Web\Navigation\Options.cs" />
-    <Compile Include="Web\Navigation\Portal.cs" />
-    <Compile Include="Web\Navigation\QuickCreate.cs" />
-    <Compile Include="Web\Navigation\SignOut.cs" />
-    <Compile Include="Web\NegativeScenarios\BusinessProcessFlow\InvalidBusinessProcessFlow.cs" />
-    <Compile Include="Web\NegativeScenarios\BusinessProcessFlow\InvalidNextStage.cs" />
-    <Compile Include="Web\NegativeScenarios\BusinessProcessFlow\InvalidPreviousStage.cs" />
-    <Compile Include="Web\NegativeScenarios\BusinessProcessFlow\InvalidSelectBusinessProcessFlow.cs" />
-    <Compile Include="Web\NegativeScenarios\CommandBar\InvalidClickCommand.cs" />
-    <Compile Include="Web\NegativeScenarios\DashBoard\InvalidSwitchDashBoard.cs" />
-    <Compile Include="Web\NegativeScenarios\Dialogs\InvalidRunWorkFlow.cs" />
-    <Compile Include="Web\NegativeScenarios\Entity\InvalidCollapseTab.cs" />
-    <Compile Include="Web\NegativeScenarios\Entity\InvalidExpandTab.cs" />
-    <Compile Include="Web\NegativeScenarios\Entity\InvalidOpenEntity.cs" />
-    <Compile Include="Web\NegativeScenarios\Entity\InvalidSelectTab.cs" />
-    <Compile Include="Web\NegativeScenarios\GlobalSearch\InvalidFilterWith.cs" />
-    <Compile Include="Web\NegativeScenarios\GlobalSearch\InvalidSearchOpenRecord.cs" />
-    <Compile Include="Web\NegativeScenarios\Grid\InvalidFilterByLetter.cs" />
-    <Compile Include="Web\NegativeScenarios\Grid\InvalidSort.cs" />
-    <Compile Include="Web\NegativeScenarios\Grid\InvalidSwitchChart.cs" />
-    <Compile Include="Web\NegativeScenarios\InvalidOpenArea.cs" />
-    <Compile Include="Web\NegativeScenarios\InvalidOpenRecord.cs" />
-    <Compile Include="Web\NegativeScenarios\InvalidSetValue.cs" />
-    <Compile Include="Web\NegativeScenarios\InvalidSubArea.cs" />
-    <Compile Include="Web\NegativeScenarios\InvalidSwitchView.cs" />
-    <Compile Include="Web\NegativeScenarios\Navigation\InvalidQuickCreate.cs" />
-    <Compile Include="Web\NegativeScenarios\RelatedGrid\InvalidRelatedArea.cs" />
-    <Compile Include="Web\NegativeScenarios\RelatedGrid\InvalidRelatedClickCommand.cs" />
-    <Compile Include="Web\NegativeScenarios\RelatedGrid\InvalidRelatedOpenGrid.cs" />
-    <Compile Include="Web\NegativeScenarios\RelatedGrid\InvalidRelatedSort.cs" />
-    <Compile Include="Web\NegativeScenarios\RelatedGrid\InvalidRelatedSwitchView.cs" />
-    <Compile Include="Web\Notification\Notifications.cs" />
-    <Compile Include="Web\Read\OpenCase.cs" />
-    <Compile Include="Web\Update\UpdateAccount.cs" />
-    <Compile Include="Web\Update\UpdateCase.cs" />
-    <Compile Include="Web\Update\UpdateContact.cs" />
-    <Compile Include="Web\Update\UpdateLead.cs" />
-    <Compile Include="Web\Update\UpdateOpportunity.cs" />
-    <Compile Include="Web\Reports\Reports.cs" />
-    <Compile Include="Web\TakeScreenshot\ScreenShot.cs" />
-    <Compile Include="SharedAPI\AzureInsights\Telemetry.cs" />
+    <Compile Include="UCI\Create\Sprint1.cs" />
     <Compile Include="TestSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SharedAPI\AzureInsights\UploadTelemetry.cs" />
-    <Compile Include="Web\Views\Views.cs" />
+    <Compile Include="UCI\ImportExcelDataToCRm.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.build.config" />
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="AzureDevOps\EasyRepro.runsettings" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="UCI\UnifiedInterface.orderedtest" />
-    <None Include="Web\WebClient.orderedtest" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ExcelDataFile\" />
+    <Folder Include="ExtentReports\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Dynamics365.UIAutomation.Api.UCI\Microsoft.Dynamics365.UIAutomation.Api.UCI.csproj">
       <Project>{afcb5bb5-4512-4019-a911-5d56cff4f3d0}</Project>

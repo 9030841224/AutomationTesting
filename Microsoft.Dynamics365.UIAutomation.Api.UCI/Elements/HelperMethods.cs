@@ -11,6 +11,9 @@ using System.Linq;
 using OpenQA.Selenium.Support.UI;
 using OpenQA.Selenium.Interactions;
 using System.Text;
+using System.IO;
+using Word = Microsoft.Office.Interop.Word;
+using Microsoft.Office.Interop.Word;
 
 namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
 {
@@ -55,20 +58,20 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             { "Accounts","account" },
             { "Bookings","bookableresourcebooking" },
             { "Bookable Resources","bookableresource" }
-        };
+        };        
 
         private const int DefaultThinkTime = 2000;
 
         public static void CreateTestAccount(XrmApp xrm, string BusinessName)
         {
             Random random = new Random();
-            string AccountNumber = "Account" + random.Next(100, 9999).ToString();
-            xrm.Entity.SetValue("name", BusinessName + random.Next(100, 9999).ToString());
+            string AccountNumber = "Account" + random.Next(10, 9999).ToString();
+            xrm.Entity.SetValue("name", BusinessName + random.Next(10, 9999).ToString());
             xrm.Entity.SetValue("telephone1",string.Format("9{0}", GeneratRandomNumber(9)));
             xrm.Entity.SetValue("websiteurl","www.test"+ random.Next(1, 99).ToString() + ".com");
             xrm.Entity.SetValue(new OptionSet { Name = "customertypecode", Value = "Other" });
             xrm.Entity.SetValue(new LookupItem { Name = "parentaccountid", Value = "A Datum Corporation", Index = 0 });
-            xrm.Entity.SetValue(new LookupItem { Name = "defaultpricelevelid", Value = "France Bill Rates", Index = 0 });
+            //xrm.Entity.SetValue(new LookupItem { Name = "defaultpricelevelid", Value = "France Bill Rates", Index = 0 });
             xrm.ThinkTime(5000);
             
         }
@@ -823,5 +826,54 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             }
         }
         #endregion
+
+        #region Logger ScreenShots, Word Exports.
+        //Take Screen Short and pass the name what you want...!
+        public static void ScreenShot(XrmApp xrm, WebClient client, string ScreenShortName, string FolderPath)
+        {
+            string ScreenName = ScreenShortName.ToString();           
+            Screenshot ss = ((ITakesScreenshot)client.Browser.Driver).GetScreenshot();
+            ss.SaveAsFile(FolderPath +"\\"+ ScreenName + ".jpg");
+        }
+
+        public static void CopyScreenShotsIntoWord(XrmApp xrm, WebClient client, string FolderPath, string MethodName)
+        {
+            
+            // Get a list of all image files in the source folder
+            string[] images = Directory.GetFiles(FolderPath, "*.jpg", SearchOption.AllDirectories).OrderByDescending(x => x).ToArray();
+
+            // Start a new instance of Word
+            Word.Application wordApp = new Word.Application();             
+            
+           // Create a new document
+            Word.Document wordDoc = wordApp.Documents.Add();    
+            
+            // Loop through the list of images
+            foreach (string image in images)
+            {
+
+                // Get the file name of the image 
+                string imageName = Path.GetFileNameWithoutExtension(image); 
+                // Insert the image into the Word document 
+                InlineShape shape = wordDoc.InlineShapes.AddPicture(image);
+                // Add a description for the image below the image 
+
+                shape.Range.InsertAfter("\n" + imageName + "\n");
+                //wordDoc.Content.InsertAfter("\n" + imageName + "\n");
+            }
+
+            // Save the Word document
+            wordDoc.SaveAs2(FolderPath + MethodName +".docx");             
+            // Close the Word application
+            wordApp.Quit();
+        }
+
+        #endregion
+
+        public static void UploadExcel(XrmApp xrmApp, WebClient client)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
