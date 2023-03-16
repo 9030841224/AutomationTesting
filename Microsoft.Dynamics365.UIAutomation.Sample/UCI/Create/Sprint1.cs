@@ -8,6 +8,9 @@ using OpenQA.Selenium;
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
 using System.IO;
+using System.Data.OleDb;
+using System.Data;
+using static Microsoft.Dynamics365.UIAutomation.Api.UCI.HelperMethods;
 
 namespace Microsoft.Dynamics365.UIAutomation.Sample.UCI
 {
@@ -19,13 +22,16 @@ namespace Microsoft.Dynamics365.UIAutomation.Sample.UCI
         private readonly SecureString _mfaSecretKey = System.Configuration.ConfigurationManager.AppSettings["MfaSecretKey"].ToSecureString();
         private readonly Uri _xrmUri = new Uri(System.Configuration.ConfigurationManager.AppSettings["OnlineCrmUrl"].ToString());
         string parentFolder = "D:\\New folder\\EasyRepro-develop\\TestResults";
+        public const string connString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=D:\\Projects\\Accounts.xlsx; Extended Properties='Excel 8.0;HDR=YES;IMEX=1;'";
 
         private static ExtentReports extent;
+
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)
         {
             extent = new ExtentReports();
-            var htmlReporter = new ExtentHtmlReporter(@"D:\New folder\EasyRepro-develop\Microsoft.Dynamics365.UIAutomation.Sample\ExtentReports\index.HTML");
+            Random r = new Random();
+            var htmlReporter = new ExtentHtmlReporter(@"D:\New folder\EasyRepro-develop\Microsoft.Dynamics365.UIAutomation.Sample\ExtentReports\"+r.Next(10,100)+"index.HTML");
             extent.AttachReporter(htmlReporter);
         }
 
@@ -71,9 +77,18 @@ namespace Microsoft.Dynamics365.UIAutomation.Sample.UCI
                     if (Flag)
                     {
                         test.Log(Status.Info, "Created new account");
-                        test.Pass("Test Passed");                        
+                        test.Pass("Test Passed");
                         HelperMethods.ScreenShot(xrmApp, client, Info.createAccount, childFolderPath);
                         HelperMethods.CopyScreenShotsIntoWord(xrmApp, client, childFolderPath, "CopyScreenshotsIntoWord");
+
+                        //Delete Account start here..xrmApp.Navigation.OpenSubArea("Sales", "Accounts");
+                        //HelperMethods.Grid_SwitchView(xrmApp, client, "My Active Accounts");
+                        //test.Log(Status.Info, "My Active accounts View");
+                        //HelperMethods.SelectRecord(xrmApp, client, 0, false);
+                        //xrmApp.CommandBar.ClickCommand("Delete");
+                        //xrmApp.ThinkTime(9000);
+                        //xrmApp.Dialogs.ConfirmationDialog(true);
+
                         Assert.IsTrue(Flag);
                     }
                     else
@@ -149,6 +164,7 @@ namespace Microsoft.Dynamics365.UIAutomation.Sample.UCI
                 Assert.IsTrue(false);
             }
         }
+
         [TestMethod]
         public void AcountCoreFieldsVerify()
         {
@@ -391,6 +407,143 @@ namespace Microsoft.Dynamics365.UIAutomation.Sample.UCI
                 Assert.IsTrue(false);
             }
         }
+      
+        public void DeleteAccount()
+        {
+            var test = extent.CreateTest("DeleteAccount");
+            var client = new WebClient(TestSettings.Options);
+            InfoConstants Info = new InfoConstants();
+            try
+            {
+                using (var xrmApp = new XrmApp(client))
+                {
+                    string childFolder = "DeleteAccount";
+                    // Check if the parent folder exists
+                    if (!Directory.Exists(parentFolder))
+                    {
+                        // If the parent folder does not exist, create it
+                        Directory.CreateDirectory(parentFolder);
+                    }
+                    // Create the full path to the child folder
+                    string childFolderPath = Path.Combine(parentFolder, childFolder);
+                    // Create the child folder
+                    string path = Directory.CreateDirectory(childFolderPath).ToString();
+
+                    test.Log(Status.Info, "Loading Chrome Browser");
+                    xrmApp.OnlineLogin.Login(_xrmUri, _username, _password, _mfaSecretKey);
+                    test.Log(Status.Info, Info.login);
+                    HelperMethods.ScreenShot(xrmApp, client, Info.login, childFolderPath);
+                    xrmApp.Navigation.OpenApp(UCIAppName.Sales);
+                    test.Log(Status.Info, Info.OpenSales);
+                    HelperMethods.ScreenShot(xrmApp, client, Info.OpenSales, childFolderPath);
+                    xrmApp.Navigation.OpenSubArea("Sales", "Accounts");
+                    test.Log(Status.Info, "Navigating to Account");
+                    HelperMethods.Grid_SwitchView(xrmApp, client, "My Active Accounts");
+                    test.Log(Status.Info, "My Active accounts View");
+                    HelperMethods.OpenFirstRecord(xrmApp, client);
+                    test.Log(Status.Info, "Open First Record");
+                    xrmApp.Entity.Delete();
+
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        [TestMethod]
+        public void ImportExcelDataForCreatingNewAccounts()
+        {
+            var test = extent.CreateTest("ImportExcelDataForCreatingNewAccounts");
+            InfoConstants Info = new InfoConstants();
+            var client = new WebClient(TestSettings.Options);
+            bool Flag = false;
+            try
+            {
+                using (var xrmApp = new XrmApp(client))
+                {
+                    string childFolder = "ImportExcelDataForCreatingNewAccounts";
+                    // Check if the parent folder exists
+                    if (!Directory.Exists(parentFolder))
+                    {
+                        // If the parent folder does not exist, create it
+                        Directory.CreateDirectory(parentFolder);
+                    }
+                    // Create the full path to the child folder
+                    string childFolderPath = Path.Combine(parentFolder, childFolder);
+                    // Create the child folder
+                    string path = Directory.CreateDirectory(childFolderPath).ToString();
+
+                    test.Log(Status.Info, "Loading Chrome Browser");
+                    xrmApp.OnlineLogin.Login(_xrmUri, _username, _password, _mfaSecretKey);
+                    test.Log(Status.Info, Info.login);
+                    HelperMethods.ScreenShot(xrmApp, client, Info.login, childFolderPath);
+                    xrmApp.Navigation.OpenApp(UCIAppName.Sales);
+                    test.Log(Status.Info, Info.OpenSales);
+                    HelperMethods.ScreenShot(xrmApp, client, Info.OpenSales, childFolderPath);
+                    xrmApp.Navigation.OpenSubArea("Sales", "Accounts");
+                    test.Log(Status.Info, "Navigating to Account");
+                    // Create the connection object
+                    using(OleDbConnection oledbConn = new OleDbConnection(connString))
+                    {
+                        // Open connection
+                        oledbConn.Open();
+                        // Create OleDbCommand object and select data from worksheet Sample-spreadsheet-file
+                        // Here sheet name is Sample-spreadsheet-file, usually it is Sheet1, Sheet2 etc..
+                        OleDbCommand cmd = new OleDbCommand("SELECT * FROM [Accounts$]", oledbConn);
+                        // Create new OleDbDataAdapter
+                        OleDbDataAdapter oleda = new OleDbDataAdapter();
+                        oleda.SelectCommand = cmd;
+                        // Create a DataSet which will hold the data extracted from the worksheet.
+                        DataSet ds = new DataSet();
+                        // Fill the DataSet from the data extracted from the worksheet.
+                        oleda.Fill(ds, "Employees");
+                        foreach (var m in ds.Tables[0].DefaultView)
+                        {
+                            xrmApp.CommandBar.ClickCommand("New");
+                            var AccountName = ((System.Data.DataRowView)m).Row.ItemArray[0];
+                            var Phone = ((System.Data.DataRowView)m).Row.ItemArray[1];
+                            var Website = ((System.Data.DataRowView)m).Row.ItemArray[2];
+                            var RelationshipType = ((System.Data.DataRowView)m).Row.ItemArray[3];
+                            var ParentAccount = ((System.Data.DataRowView)m).Row.ItemArray[4];
+                            var ProductPriceList = ((System.Data.DataRowView)m).Row.ItemArray[5];
+
+                            xrmApp.Entity.SetValue("name", AccountName.ToString());
+                            xrmApp.Entity.SetValue("telephone1", Phone.ToString());
+                            xrmApp.Entity.SetValue("websiteurl", Website.ToString());
+                            xrmApp.Entity.SetValue(new OptionSet { Name = "customertypecode", Value = RelationshipType.ToString() });
+                            xrmApp.Entity.SetValue(new LookupItem { Name = "parentaccountid", Value = ParentAccount.ToString(), Index = 0 });
+
+                            xrmApp.Entity.Save();
+                            HelperMethods.ScreenShot(xrmApp, client, Info.createAccount, childFolderPath);
+                            xrmApp.ThinkTime(5000);
+                        }
+
+                        Flag = true;
+                        if (Flag)
+                        {
+                            test.Log(Status.Info, "Created new accounts");
+                            test.Pass("Test Passed");
+                            HelperMethods.CopyScreenShotsIntoWord(xrmApp, client, childFolderPath, "CopyScreenshotsIntoWord");  
+                            Assert.IsTrue(Flag);
+                        }
+                        else
+                        {
+                            test.Fail("CreateNewAccount is Failed");
+                            Assert.IsTrue(Flag);
+                        }
+                    }                                       
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Error :" + ex.Message);
+                test.Fail("Test Failed");
+                Assert.IsTrue(false);
+            }
+        }        
+
         [AssemblyCleanup]
         public static void AssemblyCleanup()
         {
@@ -407,8 +560,10 @@ namespace Microsoft.Dynamics365.UIAutomation.Sample.UCI
         public string phoneNumberValidation = "3.Phone number validated in account form";
         public string GlobalSearch = "3.Search input in global search";
         public string CreateContact = "3.Creating new contact in sales app.";
+
+       
+
+
+
     }
 }
-
-
-

@@ -14,6 +14,9 @@ using System.Text;
 using System.IO;
 using Word = Microsoft.Office.Interop.Word;
 using Microsoft.Office.Interop.Word;
+using System.Data.OleDb;
+using System.Data;
+using HtmlAgilityPack;
 
 namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
 {
@@ -22,8 +25,59 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
         public const string PhoneNumberFormat = @"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$";
         public const string EmailFormat = @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z";
         public const string WebsiteFormat = @"((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)";
+        private const string GRIDXPATH = "//div[contains(@id, 'entity_control-pcf_grid_control_container')] //*[@data-id='grid-container']";
+        
+        // private const string GRIDXPATH = "( //div[contains(@id, 'entity_control-pcf_grid_control_container')] //*[@data-id='grid-container']  | //*[@data-id='data-set-body-container' and //*[@class='wj-cells'] ] )";
+        //private const string GRID_SCROLL_LEFT_COMMAND = "document.querySelectorAll(\"[id='entity_control-pcf_grid_control_container'] div[class='ag-body-horizontal-scroll'] div[ref='eViewport']\").scrollBy(-400, 0);";
+        //private const string GRID_SCROLL_ALL_RIGHT_COMMAND = "document.querySelectorAll(\"[id='entity_control-pcf_grid_control_container'] div[class='ag-body-horizontal-scroll'] div[ref='eViewport']\").scrollBy(12000, 0);";
+        //private const string GRID_QUERY_HOW_MUCH_UNTIL_RESET = "return document.querySelectorAll(\"[id='entity_control-pcf_grid_control_container'] div[class='ag-body-horizontal-scroll'] div[ref='eViewport']\").scrollLeft;";
+        //use HDR=YES if first excel row contains headers, HDR=NO means your excel's first row is not headers and it's data.
+        public static void excelDataReadandcreateNewAccounts(XrmApp xrm, string connString)
+        {
+            // Create the connection object
+            OleDbConnection oledbConn = new OleDbConnection(connString);
+            try
+            {
+                // Open connection
+                oledbConn.Open();                 
+                // Create OleDbCommand object and select data from worksheet Sample-spreadsheet-file
+                // Here sheet name is Sample-spreadsheet-file, usually it is Sheet1, Sheet2 etc..
+                OleDbCommand cmd = new OleDbCommand("SELECT * FROM [Accounts$]", oledbConn);                 
+                // Create new OleDbDataAdapter
+                OleDbDataAdapter oleda = new OleDbDataAdapter(); 
+                oleda.SelectCommand = cmd;                 
+                // Create a DataSet which will hold the data extracted from the worksheet.
+                DataSet ds = new DataSet();                 
+                // Fill the DataSet from the data extracted from the worksheet.
+                oleda.Fill(ds, "Employees");
+                foreach (var m in ds.Tables[0].DefaultView)
+                {
+                    xrm.CommandBar.ClickCommand("New");
+                    var AccountName = ((System.Data.DataRowView)m).Row.ItemArray[0];
+                    var Phone = ((System.Data.DataRowView)m).Row.ItemArray[1];
+                    var Website = ((System.Data.DataRowView)m).Row.ItemArray[2];
+                    var RelationshipType = ((System.Data.DataRowView)m).Row.ItemArray[3];
+                    var ParentAccount = ((System.Data.DataRowView)m).Row.ItemArray[4];
+                    var ProductPriceList = ((System.Data.DataRowView)m).Row.ItemArray[5];
+
+                    xrm.Entity.SetValue("name", AccountName.ToString());
+                    xrm.Entity.SetValue("telephone1", Phone.ToString());
+                    xrm.Entity.SetValue("websiteurl", Website.ToString());
+                    xrm.Entity.SetValue(new OptionSet { Name = "customertypecode", Value = RelationshipType.ToString() });
+                    xrm.Entity.SetValue(new LookupItem { Name = "parentaccountid", Value = ParentAccount.ToString(), Index = 0 });
+                    //xrm.Entity.SetValue(new LookupItem { Name = "defaultpricelevelid", Value = "France Bill Rates", Index = 0 });
+                    xrm.Entity.Save();
+                    xrm.ThinkTime(5000);
+
+                }
 
 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error :" + e.Message);
+            }
+        }
         public static void GetAllRequiredFields(XrmApp xrmApp, WebClient client)
         {
             var TotalReqFields = client.Browser.Driver.FindElements(By.XPath("//input[@aria-required='true']"));
@@ -45,6 +99,7 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
                 xrmApp.ThinkTime(5000);
             }
         }
+
         public static Dictionary<string, string> EntityDisplayNames = new Dictionary<string, string>()
         {
             { "Accounts", "Account"},
@@ -442,7 +497,7 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
         public static void SelectRecord(XrmApp xrm, WebClient client, int index, bool doubleClick = false, int thinkTime = DefaultThinkTime)
         {
             //NOTE: Review in future to see if we can change static wait times to waitfor(something)
-            string xpathRecord = $"//*[@id='entity_control-pcf_grid_control_container']//div[@class='ag-center-cols-clipper']//div[@row-index='{index}']//span[contains(@class,'RowSelectionCheckMarkSpan')]";
+            string xpathRecord = $"//*[@id='entity_control-pcf_grid_control_container']//div[@class='ag-center-cols-clipper']//div[@row-index='0']//div[contains(@class,'RowSelectionCheckMarkSpan')]";
             string editableRecordXpath = $"//div[@data-id='entity_control_container']//div[@role='checkbox']";
             bool hasPCFGridRecord = client.Browser.Driver.HasElement(By.XPath(xpathRecord));
             bool hasEditableGridRecord = client.Browser.Driver.HasElement(By.XPath(editableRecordXpath));
@@ -789,6 +844,80 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
         //}
         #endregion
 
+        #region Views Filter
+        public class GridHeader
+        {
+            public int Index { get; set; }
+            public string LogicalName { get; set; }
+            public string DisplayName { get; set; }
+        }
+
+        public static List<GridHeader> GetGridHeaders(XrmApp xrm, WebClient client)
+        {
+
+           // IJavaScriptExecutor js = (IJavaScriptExecutor)client.Browser.Driver;
+
+            string gridHeaderXPath = $"{GRIDXPATH}  //*[@role='columnheader']/..";
+            string gridCellXPath = $"//*[@role='columnheader']";
+
+            client.Browser.Driver.WaitUntilAvailable(By.XPath(GRIDXPATH));
+            var headerCount = int.Parse(client.Browser.Driver.FindElement(By.XPath(GRIDXPATH + "//*[@aria-colcount]")).GetAttribute("aria-colcount"));
+
+            List<GridHeader> result = new List<GridHeader>();
+
+            //js.ExecuteScript(GRID_SCROLL_ALL_RIGHT_COMMAND);
+            //while (Convert.ToDouble(js.ExecuteScript(GRID_QUERY_HOW_MUCH_UNTIL_RESET)) != 0)
+            //{
+
+                var headerRow = client.Browser.Driver.FindElement(By.XPath(gridHeaderXPath));
+                var headerRowHtml = headerRow.GetAttribute("innerHTML");
+
+                var headerDoc = new HtmlDocument();
+                headerDoc.LoadHtml(headerRowHtml);
+
+                var headers = headerDoc.DocumentNode.SelectNodes(gridCellXPath);
+
+                foreach (var header in headers)
+                {
+                    var index = int.Parse(header.GetAttributeValue("aria-colindex", null));
+                    var logicalName = header.GetAttributeValue("col-id", null);
+                    var displayText = header.GetAttributeValue("title", null);
+
+                    //PCF grids have title in a child node
+                    if (displayText == null)
+                    {
+                        var rowDoc = new HtmlDocument();
+                        rowDoc.LoadHtml(header.InnerHtml);
+
+                        displayText = rowDoc.DocumentNode.SelectSingleNode("//*[@title]")?.InnerText;
+                    }
+
+
+                    if (!result.Exists(it => it.Index == index))
+                    {
+                        result.Add(new GridHeader { Index = index, LogicalName = logicalName, DisplayName = displayText });
+                    }
+                }
+
+            //    js.ExecuteScript(GRID_SCROLL_LEFT_COMMAND);
+            //}
+
+            return result;
+
+        }
+
+        public static List<string> getGridHeaderList(XrmApp xrm, WebClient client, string GridName, int thinkTime = DefaultThinkTime, bool debug = false)
+        {
+            var columnNames = GetGridHeaders(xrm, client).Select(it => it.DisplayName).ToList();
+
+            if (debug) HelperMethods.DebugOutputForReferenceListCreation(columnNames);
+
+            columnNames.RemoveAll(string.IsNullOrEmpty);
+
+            return columnNames;
+        }
+        #endregion
+
         #region Validate Reg Exprestions
         public static bool ValidatePhoneNumber(string PhNumber)
         {
@@ -870,10 +999,261 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
 
         #endregion
 
-        public static void UploadExcel(XrmApp xrmApp, WebClient client)
+        #region Edit Filter on Views
+
+        public struct advancedFilterTest
         {
-            throw new NotImplementedException();
+            // TestType -  valid values are "fields", "values", and "dropDowns"
+            // We can add more as we see fit.
+            //Test for examples, see usage references for details.
+
+            public int Index;
+            public string TestType, TestFor;
+
+            public advancedFilterTest(int index, string fieldOrValue, string testFor)
+            {
+                this.Index = index;
+                this.TestType = fieldOrValue;
+                this.TestFor = testFor;
+            }
+        }//afTeststruct
+
+        public static void AdvancedFilter_Open(XrmApp xrm, WebClient client)
+        {
+            // This method navigates to the Advanced Filter page
+            try
+            {
+                //lets make sure we have the filter available.
+                HelperMethods.WaitForElementToBeDisplayed(xrm, client, "//button[@id='open-advanced-filter']");
+
+                var button = client.Browser.Driver.FindElement(By.Id("open-advanced-filter"));
+                client.ThinkTime(500); // take a pause to avoid race conditions.
+                button.Click();
+
+                HelperMethods.WaitForInvisibilityOfProgressIndicator(xrm, client);
+                HelperMethods.WaitForElementToBeDisplayed(xrm, client, "//div[@aria-labelledby='advanced-filters-header']");
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.ToString() + " HelperMethods.AdvancedFilter_Open() failed. ";
+                throw new Exception(msg);
+            }
         }
+
+        public static void WaitForElementToBeDisplayed(XrmApp xrm, WebClient client, string locatorString, bool byID, bool byXpath)
+        {
+            TimeSpan timeout = TimeSpan.FromSeconds(90);
+            WebDriverWait wait = new WebDriverWait(client.Browser.Driver, timeout);
+
+            // wait for element to appear
+            Func<IWebDriver, bool> elementIsDisplayed =
+            d =>
+            {
+                if (byID)
+                {
+                    ReadOnlyCollection<IWebElement> e = d.FindElements(By.Id(locatorString));
+                    return e.Count > 0;
+                }
+                else if (byXpath)
+                {
+                    ReadOnlyCollection<IWebElement> e = d.FindElements(By.XPath(locatorString));
+                    return e.Count > 0;
+                }
+                else
+                    throw new Exception("Could not locate element to wait for.");
+            };
+
+            wait.Until(elementIsDisplayed);
+
+            // TODO: Refactor to use WaitUntilClickable/etc. at a later date
+            xrm.ThinkTime(500);
+        }
+
+        public static void WaitForElementToBeDisplayed(XrmApp xrm, WebClient client, string elementXpath)
+        {
+            TimeSpan timeout = TimeSpan.FromSeconds(60);
+            WebDriverWait wait = new WebDriverWait(client.Browser.Driver, timeout);
+
+            // wait for element to appear
+            Func<IWebDriver, bool> elementIsDisplayed =
+            d =>
+            {
+                ReadOnlyCollection<IWebElement> e = d.FindElements(By.XPath(elementXpath));
+                return e.Count > 0;
+            };
+            wait.Until(elementIsDisplayed);
+
+            // TODO: Refactor to use WaitUntilClickable/etc. at a later date
+            xrm.ThinkTime(500);
+        }
+
+        public static List<IWebElement> AdvancedFilter_GetFields(XrmApp xrm, WebClient client)
+        {
+            // This method gets the left two column fields from the AF dialog, e.g. Status, Equals
+            try
+            {
+                string xpathFields = "//input[contains(@class, 'ms-ComboBox-Input')]";
+                var fields = client.Browser.Driver.FindElements(By.XPath(xpathFields)).ToList();
+                return fields;
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.ToString() + " HelperMethods.AdvancedFilter_GetFields() failed. ";
+                throw new Exception(msg);
+            }
+        }
+
+        public static ReadOnlyCollection<IWebElement> AdvancedFilter_GetTagItems(XrmApp xrm, WebClient client)
+        {
+            // This method gets the right most values from the AF dialog, e.g. Active
+            try
+            {
+                string xpathValues = "//div[contains(@class, 'ms-BasePicker')]//span[contains(@class, 'ms-TagItem-text')]";
+                var values = client.Browser.Driver.FindElements(By.XPath(xpathValues));
+                return values;
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.ToString() + " HelperMethods.AdvancedFilter_GetValues() failed. ";
+                throw new Exception(msg);
+            }
+        }
+
+        public static ReadOnlyCollection<IWebElement> AdvancedFilter_GetDropDowns(XrmApp xrm, WebClient client)
+        {
+            // This method gets the Drop Down from teh AF dialog, e.g. Contains data
+            try
+            {
+                string xpath = "//span[contains(@class, 'ms-Dropdown-title')]";
+                var values = client.Browser.Driver.FindElements(By.XPath(xpath));
+                return values;
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.ToString() + " HelperMethods.AdvancedFilter_GetValues() failed. ";
+                throw new Exception(msg);
+            }
+        }
+
+        public static List<IWebElement> AdvancedFilter_GetFreeTextFields(XrmApp xrm, WebClient client)
+        {
+            // This method gets the right most values from the AF dialog, e.g. Active
+            try
+            {
+                string xpathValues = "//input[contains(@class,'ms-TextField-field')]";
+                var values = client.Browser.Driver.FindElements(By.XPath(xpathValues)).ToList();
+                return values;
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.ToString() + " HelperMethods.AdvancedFilter_GetFreeTextFields() failed. ";
+                throw new Exception(msg);
+            }
+        }
+
+        public static bool AdvancedFilter_TestFor(XrmApp xrm, advancedFilterTest test, List<IWebElement> fields, ReadOnlyCollection<IWebElement> values, ReadOnlyCollection<IWebElement> dropDowns, List<IWebElement> freeTextField = null)
+        {
+            // This method takes in an advanced filterstruct and performas the test
+            try
+            {
+                if (test.TestType == "fields")
+                {
+                    return (fields[test.Index].GetAttribute("value") == test.TestFor);
+                }
+                else if (test.TestType == "values")
+                {
+                    return (values[test.Index].Text == test.TestFor);
+                }
+                else if (test.TestType == "dropDowns")
+                {
+                    return (dropDowns[test.Index].Text == test.TestFor);
+                }
+                else if (test.TestType == "FreeTextValue")
+                {
+                    return (freeTextField[test.Index].GetAttribute("value") == test.TestFor);
+                }
+                else
+                {
+                    //Incorrect TestType passed in... fail TC
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.ToString() + $" HelperMethods.AdvancedFilter_TestFor() failed for test: >> {test} << ";
+                throw new Exception(msg);
+            }
+        }
+
+        public static void AdvancedFilter_Cancel(XrmApp xrm, WebClient client)
+        {
+            try
+            {
+                //lets make sure we have the cancel available.
+                HelperMethods.WaitForElementToBeDisplayed(xrm, client, "//button[@title='Cancel']");
+
+                var button = client.Browser.Driver.FindElement(By.XPath("//button[@title='Cancel']"));
+                client.ThinkTime(500); // take a pause to avoid race conditions.
+                button.Click();
+
+                HelperMethods.WaitForInvisibilityOfProgressIndicator(xrm, client);
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.ToString() + " HelperMethods.AdvancedFilter_Cancel() failed. ";
+                throw new Exception(msg);
+            }
+        }
+        #endregion
+
+        public static List<string> GetGridViewList(XrmApp xrm, WebClient client, bool debug = false)
+        {
+            string xpathViewSelector = "//button[contains(@id,'ViewSelector')]//i[@data-icon-name='ChevronDown']";
+            //string homepageGridXpath = "//div[@data-id='GridRoot']";
+            //string xpathViewList = "//div[@aria-label='Views']//li[contains(@class,'ContextualMenu-item')]//button[@role='menuitemradio']//span[contains(@class,'itemText')]";
+            string xpathViewList = "//div[@aria-label='Views']//li[contains(@class,'ContextualMenu-item')]//button[@role='menuitemradio']";
+            List<string> viewList = new List<string>();
+
+            //client.Browser.Driver.WaitUntilVisible(By.XPath(homepageGridXpath));  //Unnecessary code.
+
+            var viewSelector = client.Browser.Driver.ClickIfVisible(By.XPath(xpathViewSelector), new TimeSpan(0, 0, 2));
+            client.Browser.Driver.WaitForTransaction();
+
+            client.Browser.Driver.WaitUntilVisible(By.XPath(xpathViewList));
+
+            var dropList = client.Browser.Driver.FindElements(By.XPath(xpathViewList));
+
+            //If viewSelector is null then previous xpath no good, change it here.  drop list must be empty as we didn't find a view selector
+            if (viewSelector == null)
+            {
+                xpathViewList = "//ul[contains(@id, 'ViewSelector')]//li";
+                xpathViewSelector = "//span[contains(@id,'ViewSelector')]";
+            }
+
+            // Let's try to fill our drop list
+            if (dropList.Count == 0)
+            {
+                // Click the new viewSelector so we get the drop list visible.
+                viewSelector = client.Browser.Driver.ClickIfVisible(By.XPath(xpathViewSelector), new TimeSpan(0, 0, 2));
+                //viewSelector.Click();
+                client.Browser.Driver.WaitUntilVisible(By.XPath(xpathViewList));
+                dropList = client.Browser.Driver.FindElements(By.XPath(xpathViewList));
+            }
+
+            //Populate our return list with drops
+            foreach (var drop in dropList)
+                viewList.Add(drop.Text);
+
+            //Click the drop list so it doesn't remain empty
+            viewSelector.Click();
+            client.Browser.Driver.WaitForTransaction();
+
+            if (debug) HelperMethods.DebugOutputForReferenceListCreation(viewList);
+            return viewList;
+        }
+
+
+
 
     }
 }
