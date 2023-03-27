@@ -1252,6 +1252,15 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             return viewList;
         }
 
+        public static ReadOnlyCollection<IWebElement> FindElementXpath_notificationWrapper (XrmApp xrm, WebClient client)
+        {
+            string findElementXpath = "//div[@role='presentation']//div[@data-id='notificationWrapper']";
+
+            var isSaved = client.Browser.Driver.FindElements(By.XPath(findElementXpath));
+
+            return isSaved;
+        }
+
 
 
 

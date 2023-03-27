@@ -171,7 +171,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="API\AccountAPITest.cs" />
     <Compile Include="ConsoleTraceListener.cs" />
+    <Compile Include="BaseClass.cs" />
     <Compile Include="UCI\Create\SalesAccountViews.cs" />
     <Compile Include="UCI\Create\Sprint1.cs" />
     <Compile Include="TestSettings.cs" />
