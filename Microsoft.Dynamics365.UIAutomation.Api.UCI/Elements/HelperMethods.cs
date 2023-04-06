@@ -22,16 +22,23 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
 {
     public class HelperMethods : Element
     {
+        #region const values
         public const string PhoneNumberFormat = @"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$";
         public const string EmailFormat = @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z";
         public const string WebsiteFormat = @"((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)";
         private const string GRIDXPATH = "//div[contains(@id, 'entity_control-pcf_grid_control_container')] //*[@data-id='grid-container']";
-        
-        // private const string GRIDXPATH = "( //div[contains(@id, 'entity_control-pcf_grid_control_container')] //*[@data-id='grid-container']  | //*[@data-id='data-set-body-container' and //*[@class='wj-cells'] ] )";
-        //private const string GRID_SCROLL_LEFT_COMMAND = "document.querySelectorAll(\"[id='entity_control-pcf_grid_control_container'] div[class='ag-body-horizontal-scroll'] div[ref='eViewport']\").scrollBy(-400, 0);";
-        //private const string GRID_SCROLL_ALL_RIGHT_COMMAND = "document.querySelectorAll(\"[id='entity_control-pcf_grid_control_container'] div[class='ag-body-horizontal-scroll'] div[ref='eViewport']\").scrollBy(12000, 0);";
-        //private const string GRID_QUERY_HOW_MUCH_UNTIL_RESET = "return document.querySelectorAll(\"[id='entity_control-pcf_grid_control_container'] div[class='ag-body-horizontal-scroll'] div[ref='eViewport']\").scrollLeft;";
-        //use HDR=YES if first excel row contains headers, HDR=NO means your excel's first row is not headers and it's data.
+        #endregion
+
+        #region Lead Stub data
+        public static List<string> namesList = new List<string> 
+            { "Alice", "Bob", "Charlie", "Tulasi", "Lakshmi", "Hanisha", "Rakesh"};
+        public static List<string> TopicsList = new List<string>
+            { "3D Printer","Audio","5G Enable Tablets","Laptop Req"};
+        public static List<string> JobtitileList = new List<string>
+            { "Sales Associate","Sales Representative","Account Executive","Sales Manager","Business Development Manager",
+            "Salesperson","Sales Consultant","Sales Development Representative","Sales Rep","Inside Sales Representative"};
+        #endregion
+       
         public static void excelDataReadandcreateNewAccounts(XrmApp xrm, string connString)
         {
             // Create the connection object
@@ -78,6 +85,18 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
                 Console.WriteLine("Error :" + e.Message);
             }
         }
+        public static int getGridRowCount(XrmApp xrmApp, WebClient client)
+        {
+            string xpath = "//div [@class='ag-center-cols-container' and @role='rowgroup']//div[@role='row' and @aria-label='Press SPACE to select this row.']";
+            var List = client.Browser.Driver.FindElements(By.XPath(xpath));
+            return List.Count ;
+
+        }
+        public static void CreateInvoice(XrmApp xrmApp)
+        {
+            xrmApp.Entity.SetValue(new LookupItem { Name = "pricelevelid", Value = "France Bill Rates", Index = 0 });
+            xrmApp.ThinkTime(4000);
+        }
         public static void GetAllRequiredFields(XrmApp xrmApp, WebClient client)
         {
             var TotalReqFields = client.Browser.Driver.FindElements(By.XPath("//input[@aria-required='true']"));
@@ -116,7 +135,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
         };        
 
         private const int DefaultThinkTime = 2000;
-
         public static void CreateTestAccount(XrmApp xrm, string BusinessName)
         {
             Random random = new Random();
@@ -130,7 +148,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             xrm.ThinkTime(5000);
             
         }
-
         public static void CreateContact(XrmApp xrm, string BusinessName)
         {
             Random random = new Random();
@@ -144,7 +161,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             xrm.ThinkTime(5000);
            
         }
-
         public static string GeneratRandomNumber(int length)
         {
             if (length > 0)
@@ -166,7 +182,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
         {
             return new Random(Guid.NewGuid().GetHashCode());
         }
-
         public static List<string> GetCoreField(List<string> NonCoreFieldLabels, List<string> LabelList)
         {
             foreach (string label in NonCoreFieldLabels)
@@ -175,7 +190,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             }
             return LabelList;
         }
-
         public static ReadOnlyCollection<IWebElement> Form_GetLabels(XrmApp xrm, WebClient client, bool debug = false)
         {
             //Method returns a collection of all the forms labels that can then be converted into a list
@@ -183,7 +197,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             var formLabels = client.Browser.Driver.FindElements(By.XPath(xpathFormLabels));
             return formLabels;
         }
-
         public static List<string> Labels_CreateList(XrmApp xrm, ReadOnlyCollection<IWebElement> labelList, bool debug = false)
         {
             List<string> returnLabelList = new List<string> { };
@@ -211,6 +224,12 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
                 }
             }
             return returnLabelList;
+        }
+
+        public static void ShowLayoutCancel(XrmApp xrmApp, WebClient client)
+        {
+            string CancelIconXPath = "//button[@aria-label='Dismiss']//i[@data-icon-name='Cancel']";
+            client.Browser.Driver.FindElement(By.XPath(CancelIconXPath)).Click();
         }
 
         public static bool CompareStringLists(List<string> referenceList, List<string> listForComparison, bool inOrderCheck = true, bool debug = false)
@@ -307,12 +326,10 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             }
             return true;
         }
-
         public static bool ValidateWebsite(Action website)
         {
             throw new NotImplementedException();
         }
-
         public static BrowserCommandResult<List<string>> GetTabs(XrmApp xrm, WebClient client, bool debug = false)
         {
 
@@ -338,7 +355,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             if (debug) HelperMethods.DebugOutputForReferenceListCreation(tabList);
             return tabList;
         }
-
         public static void DebugOutputForReferenceListCreation(List<string> list)
         {
             // Method writes to the output window each string ina  List, in order to be used in a List<string> referenceList definition.
@@ -355,7 +371,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             }
             Debug.WriteLine("};");
         }
-
         public static List<string> GetTabRequiredFields(XrmApp xrm, WebClient client, string tabname, bool debug = false)
         {
             xrm.Entity.SelectTab(tabname);
@@ -382,7 +397,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
 
             return RequriedLabel;
         }
-
         public static void WaitForInvisibilityOfProgressIndicator(XrmApp xrm, WebClient client)
         {
             string elementID = "appProgressIndicatorContainer";
@@ -404,7 +418,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             client.Browser.Driver.WaitForTransaction();
             xrm.ThinkTime(500);
         }
-
         public static void Grid_SwitchView(XrmApp xrm, WebClient client, string viewName, bool debug = false)
         {
             // Xpath
@@ -434,7 +447,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             }
             if (debug) HelperMethods.DebugOutputForReferenceListCreation(viewName);
         }
-
         public static void DebugOutputForReferenceListCreation(string list)
         {
             // Method writes to the output window a string passed in as an argument
@@ -442,13 +454,11 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             // Simply, we can copy the whole list into a reference list definition and remove the very last comma
             Debug.WriteLine($"< string > \t\"{list}\",");
         }
-
         public static void OpenFirstRecord(XrmApp xrm, WebClient client, int thinkTime = DefaultThinkTime)
         {
             //Call the method with first element index == 0
             OpenRecord(xrm, client, 0);
         }
-
         public static void OpenRecord(XrmApp xrm, WebClient client, int index, bool doubleClick = false, int thinkTime = DefaultThinkTime)
         {
             string subGridEditButtonXpath = "//button[@aria-label='Edit']";
@@ -493,7 +503,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             }
             client.Browser.Driver.WaitForTransaction();
         }
-
         public static void SelectRecord(XrmApp xrm, WebClient client, int index, bool doubleClick = false, int thinkTime = DefaultThinkTime)
         {
             //NOTE: Review in future to see if we can change static wait times to waitfor(something)
@@ -930,7 +939,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
                 return false;
             }
         }
-
         public static bool ValidateEmail(string Email)
         {
             if (Email != null)
@@ -942,7 +950,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
                 return false;
             }
         }
-
         public static bool ValidateZIP(string zip)
         {
             if (zip != null)
@@ -964,7 +971,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             Screenshot ss = ((ITakesScreenshot)client.Browser.Driver).GetScreenshot();
             ss.SaveAsFile(FolderPath +"\\"+ ScreenName + ".jpg");
         }
-
         public static void CopyScreenShotsIntoWord(XrmApp xrm, WebClient client, string FolderPath, string MethodName)
         {
             
@@ -996,11 +1002,9 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             // Close the Word application
             wordApp.Quit();
         }
-
         #endregion
 
         #region Edit Filter on Views
-
         public struct advancedFilterTest
         {
             // TestType -  valid values are "fields", "values", and "dropDowns"
@@ -1017,7 +1021,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
                 this.TestFor = testFor;
             }
         }//afTeststruct
-
         public static void AdvancedFilter_Open(XrmApp xrm, WebClient client)
         {
             // This method navigates to the Advanced Filter page
@@ -1039,7 +1042,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
                 throw new Exception(msg);
             }
         }
-
         public static void WaitForElementToBeDisplayed(XrmApp xrm, WebClient client, string locatorString, bool byID, bool byXpath)
         {
             TimeSpan timeout = TimeSpan.FromSeconds(90);
@@ -1068,7 +1070,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             // TODO: Refactor to use WaitUntilClickable/etc. at a later date
             xrm.ThinkTime(500);
         }
-
         public static void WaitForElementToBeDisplayed(XrmApp xrm, WebClient client, string elementXpath)
         {
             TimeSpan timeout = TimeSpan.FromSeconds(60);
@@ -1086,7 +1087,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             // TODO: Refactor to use WaitUntilClickable/etc. at a later date
             xrm.ThinkTime(500);
         }
-
         public static List<IWebElement> AdvancedFilter_GetFields(XrmApp xrm, WebClient client)
         {
             // This method gets the left two column fields from the AF dialog, e.g. Status, Equals
@@ -1102,7 +1102,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
                 throw new Exception(msg);
             }
         }
-
         public static ReadOnlyCollection<IWebElement> AdvancedFilter_GetTagItems(XrmApp xrm, WebClient client)
         {
             // This method gets the right most values from the AF dialog, e.g. Active
@@ -1118,7 +1117,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
                 throw new Exception(msg);
             }
         }
-
         public static ReadOnlyCollection<IWebElement> AdvancedFilter_GetDropDowns(XrmApp xrm, WebClient client)
         {
             // This method gets the Drop Down from teh AF dialog, e.g. Contains data
@@ -1134,7 +1132,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
                 throw new Exception(msg);
             }
         }
-
         public static List<IWebElement> AdvancedFilter_GetFreeTextFields(XrmApp xrm, WebClient client)
         {
             // This method gets the right most values from the AF dialog, e.g. Active
@@ -1150,7 +1147,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
                 throw new Exception(msg);
             }
         }
-
         public static bool AdvancedFilter_TestFor(XrmApp xrm, advancedFilterTest test, List<IWebElement> fields, ReadOnlyCollection<IWebElement> values, ReadOnlyCollection<IWebElement> dropDowns, List<IWebElement> freeTextField = null)
         {
             // This method takes in an advanced filterstruct and performas the test
@@ -1184,7 +1180,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
                 throw new Exception(msg);
             }
         }
-
         public static void AdvancedFilter_Cancel(XrmApp xrm, WebClient client)
         {
             try
@@ -1205,7 +1200,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             }
         }
         #endregion
-
         public static List<string> GetGridViewList(XrmApp xrm, WebClient client, bool debug = false)
         {
             string xpathViewSelector = "//button[contains(@id,'ViewSelector')]//i[@data-icon-name='ChevronDown']";
@@ -1251,7 +1245,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             if (debug) HelperMethods.DebugOutputForReferenceListCreation(viewList);
             return viewList;
         }
-
         public static ReadOnlyCollection<IWebElement> FindElementXpath_notificationWrapper (XrmApp xrm, WebClient client)
         {
             string findElementXpath = "//div[@role='presentation']//div[@data-id='notificationWrapper']";
@@ -1260,9 +1253,207 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
 
             return isSaved;
         }
+        public static void CreateLead(XrmApp xrm, string BusinessName)
+        {            
+            Random random = new Random();
+            string s = string.Empty;
+            for (int i = 0; i < 10; i++)
+                s = String.Concat(s, random.Next(10).ToString());
+            string num = s;
 
+            int index = random.Next(namesList.Count);
+            int TopicIndex = random.Next(TopicsList.Count);
+            string LName = namesList[index];
+            string Topic = TopicsList[TopicIndex];
+            //string AccountNumber = "Lead" + random.Next(100, 9999).ToString();
+            xrm.Entity.SetValue("subject", Topic);
+            //xrm.Entity.SetValue("fullname_compositionLinkControl_firstname", LName);
+            xrm.Entity.SetValue("fullname_compositionLinkControl_lastname", LName + random.Next(1, 999).ToString());
+            xrm.Entity.SetValue("emailaddress1", LName + random.Next(1, 9999).ToString() + "@gmail.com");
+            xrm.Entity.SetValue("mobilephone", num);
 
+            xrm.ThinkTime(5000);
+        }
+        public static void Clickcommands(XrmApp xrmApp, WebClient client, object command)
+        {
+            string XPath;
 
+            switch (command)
+            {
+                case Commands.NewQuoteFromQuoteTab:
+                    XPath = "//button[@data-id='quote|NoRelationship|SubGridStandard|Mscrm.SubGrid.quote.AddNewStandard']";
+                    client.Browser.Driver.FindElement(By.XPath(XPath)).Click();
+                    xrmApp.ThinkTime(3000);
+                    break;
+                case Commands.OKFromPopUp:
+                    XPath = "//*[@data-id='ok_id']";
+                    client.Browser.Driver.FindElement(By.XPath(XPath)).Click();
+                    xrmApp.ThinkTime(3000);
+                    break;                
+            }                     
+        }
+        public enum Commands { MoreCommand, NewQuoteFromQuoteTab, OKFromPopUp }
+        public enum GridType
+        {
+            OOBGrid = 1,
+            pcfGrid = 2,
+        }
+        public static void ClickCommand(XrmApp xrmApp, WebClient client, string commandName, string subname = "")
+        {
+            IWebElement ribbon = null;
+            string overflowCommandBarButtonXpath = "//ul[@data-id='OverflowFlyout']//button[contains(@aria-label,'[NAME]')]";
+            string ribbonXpath = "//ul[contains(@data-lp-id,'commandbar-Form')]";
+            string ribbonButtonXpath = $"//ul[@data-id='CommandBar']//button[@role='menuitem' and contains(@data-lp-id,'Form') and contains(@title,'{commandName}')]";
 
+            var ribbonElement = client.Browser.Driver.WaitUntilClickable(By.XPath(ribbonXpath), new TimeSpan(0, 0, 5));
+            if (ribbonElement == null)
+            {
+                client.Browser.Driver.SwitchTo().DefaultContent();
+                client.Browser.Driver.WaitUntilClickable(By.XPath(ribbonXpath), new TimeSpan(0, 0, 5));
+            }
+
+            //Find the button in the CommandBar
+            if (client.Browser.Driver.HasElement(By.XPath(AppElements.Xpath[AppReference.CommandBar.Container])))
+            {
+                ribbon = client.Browser.Driver.FindElement(By.XPath(AppElements.Xpath[AppReference.CommandBar.Container]));
+                client.Browser.Driver.WaitForTransaction();
+            }                
+
+            if (ribbon == null)
+            {
+                if (client.Browser.Driver.HasElement(By.XPath(AppElements.Xpath[AppReference.CommandBar.ContainerGrid])))
+                    ribbon = client.Browser.Driver.FindElement(By.XPath(AppElements.Xpath[AppReference.CommandBar.ContainerGrid]));
+                else
+                    throw new InvalidOperationException("Unable to find the ribbon.");
+            }
+
+            //Get the CommandBar buttons
+            var items = ribbon.FindElements(By.TagName("button"));
+            var buttons = ribbon.FindElements(By.XPath("//button"));
+            //Is the button in the ribbon?
+            if (buttons.Any(x => x.Text.Contains(commandName, StringComparison.OrdinalIgnoreCase)))
+            {
+                buttons.FirstOrDefault(x => x.Text.Contains(commandName, StringComparison.OrdinalIgnoreCase)).Click(true);
+                client.Browser.Driver.WaitForTransaction();
+            }
+            else
+            {
+                //Is the button in More Commands?
+                if (items.Any(x => x.GetAttribute<string>("data-id").Contains("OverflowButton", StringComparison.OrdinalIgnoreCase)))
+                {
+                    //Click More Commands
+                    items.FirstOrDefault(x => x.GetAttribute<string>("data-id").Contains("OverflowButton", StringComparison.OrdinalIgnoreCase)).Click(true);
+                    client.Browser.Driver.WaitForTransaction();
+
+                    //Click the button
+                    if (client.Browser.Driver.HasElement(By.XPath(AppElements.Xpath[AppReference.CommandBar.Button].Replace("[NAME]", commandName))))
+                    {
+                        client.Browser.Driver.WaitForTransaction();
+                        client.Browser.Driver.FindElement(By.XPath(overflowCommandBarButtonXpath.Replace("[NAME]", commandName))).Click(true);
+                        
+                    }
+                    else
+                        throw new InvalidOperationException($"No command with the name '{commandName}' exists inside of Commandbar.");
+                }
+                else
+                    throw new InvalidOperationException($"No command with the name '{commandName}' exists inside of Commandbar.");
+            }
+            if (!string.IsNullOrEmpty(subname))
+            {
+                var submenu = client.Browser.Driver.WaitUntilAvailable(By.XPath(AppElements.Xpath[AppReference.CommandBar.MoreCommandsMenu]));
+
+                var subbutton = submenu.FindElements(By.TagName("button")).FirstOrDefault(x => x.Text == subname);
+
+                if (subbutton != null)
+                {
+                    subbutton.Click(true);
+                }
+                else
+                    throw new InvalidOperationException($"No sub command with the name '{subname}' exists inside of Commandbar.");
+            }
+            client.Browser.Driver.WaitForTransaction();
+        }
+        public static int GetSubGridItemsCount(XrmApp xrmApp, WebClient client, string GridName)
+        {
+            IJavaScriptExecutor js = (IJavaScriptExecutor)client.Browser.Driver;
+            string xpathGridName = "//div[@id='dataSetRoot_" + GridName + "_outer']//div[contains(@style,'-webkit-overflow-scrolling:touch;')]";
+            string xpathSmallScreenListItems = "//li[contains(@data-id,'" + GridName + "-ListItem')]";
+            string subgridDataRowsXpath = "//div[@id='dataSetRoot_" + GridName + "_outer']//div[@aria-label='Data']";
+            string xpathCollapsedGrid = "//div[@id='dataSetRoot_" + GridName + "_outer']";
+            string gridContainerXpath = $"//div[@data-control-name='{GridName}']";
+            string pcfGridContainerXpath = $"//div[contains(@id,'{GridName}-pcf_grid_control_container')]";
+            string pcfGridRowsXpath = pcfGridContainerXpath + "//div[@ref='eContainer']//div[@row-index]";
+
+            try
+            {
+                client.Browser.Driver.WaitUntilVisible(By.XPath(gridContainerXpath), new TimeSpan(0, 0, 5), ". Subgrid container failed to render...");
+                var isRegularGrid = client.Browser.Driver.HasElement(By.XPath(pcfGridContainerXpath));
+                if (isRegularGrid)
+                {
+                    var gridRows = client.Browser.Driver.FindElements(By.XPath(pcfGridRowsXpath));
+                    return gridRows.Count;
+                }
+                else
+                    throw new InvalidOperationException($"Get Sub Grid Items Count: {GridName} NOT found.");
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.ToString() + ". GetSubGridItemsCount() failed.";
+                throw new Exception(msg);
+            }
+        }
+        public static int GetSubGridItemsCount(XrmApp xrmApp, WebClient client, string GridName, int thinkTime = 2000, GridType gridType = GridType.pcfGrid)
+        {
+            IJavaScriptExecutor js = (IJavaScriptExecutor)client.Browser.Driver;
+            string xpathGridName = "//div[@id='dataSetRoot_" + GridName + "_outer']//div[contains(@style,'-webkit-overflow-scrolling:touch;')]";
+            string xpathSmallScreenListItems = "//li[contains(@data-id,'" + GridName + "-ListItem')]";
+            string subgridDataRowsXpath = "//div[@id='dataSetRoot_" + GridName + "_outer']//div[@aria-label='Data']";
+            string xpathCollapsedGrid = "//div[@id='dataSetRoot_" + GridName + "_outer']";
+            string gridContainerXpath = $"//div[@data-control-name='{GridName}']";
+            string pcfGridContainerXpath = $"//div[contains(@id,'{GridName}-pcf_grid_control_container')]";
+            string pcfGridRowsXpath = pcfGridContainerXpath + "//div[@class='ag-center-cols-container']//div[@aria-rowindex]";
+
+            try
+            {
+                switch (gridType)
+                {
+                    case GridType.pcfGrid:
+                        {
+                            client.Browser.Driver.WaitUntilVisible(By.XPath(gridContainerXpath), new TimeSpan(0, 0, 5), ". Subgrid container failed to render...");
+                            var isRegularGrid = client.Browser.Driver.HasElement(By.XPath(pcfGridContainerXpath));
+                            if (isRegularGrid)
+                            {
+                                var gridRows = client.Browser.Driver.FindElements(By.XPath(pcfGridRowsXpath));
+                                return gridRows.Count;
+                            }
+                            else
+                            {
+                                throw new InvalidOperationException($"Get Sub Grid Items Count: {GridName} NOT found.");
+                            }
+                        }
+                    case GridType.OOBGrid:
+                        {
+                            client.Browser.Driver.WaitUntilVisible(By.XPath(gridContainerXpath), new TimeSpan(0, 0, 5), ". Subgrid container failed to render...");
+                            string gridRowsXpath = xpathGridName + "//div[@aria-rowindex]";
+                            var isRegularGrid = client.Browser.Driver.HasElement(By.XPath(gridRowsXpath));
+                            if (isRegularGrid)
+                            {
+                                var gridRows = client.Browser.Driver.FindElements(By.XPath(gridRowsXpath));
+                                return (gridRows.Count - 1);
+                            }
+                            else
+                            {
+                                throw new InvalidOperationException($"Get Sub Grid Items Count: {GridName} NOT found.");
+                            }
+                        }
+                }
+                return 0; //no record found.
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.ToString() + ". GetSubGridItemsCount() failed.";
+                throw new Exception(msg);
+            }
+        }
     }
 }

@@ -1,16 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Dynamics365.UIAutomation.Api.UCI;
-using Microsoft.Dynamics365.UIAutomation.Browser;
 using System;
-using System.Security;
 using System.Collections.Generic;
-using OpenQA.Selenium;
 using AventStack.ExtentReports;
-using AventStack.ExtentReports.Reporter;
 using System.IO;
 using System.Data.OleDb;
 using System.Data;
-using static Microsoft.Dynamics365.UIAutomation.Api.UCI.HelperMethods;
 
 namespace Microsoft.Dynamics365.UIAutomation.Sample.UCI
 {
@@ -288,7 +283,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Sample.UCI
                 Assert.IsTrue(false);
             }
         }
-
         
         public void GlobalSearch()
         {
@@ -902,7 +896,6 @@ namespace Microsoft.Dynamics365.UIAutomation.Sample.UCI
                 Assert.IsTrue(false);
             }
         }
-
                
     }
     public class InfoConstants
