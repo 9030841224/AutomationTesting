@@ -54,13 +54,16 @@ namespace Microsoft.Dynamics365.UIAutomation.Sample.UCI.Create
 
                     xrmApp.Entity.SelectTab("Product line items");
                     xrmApp.Entity.SetValue(new LookupItem() { Name = "pricelevelid", Value = "France Bill Rates" });
-                    xrmApp.ThinkTime(4000);
+                   // xrmApp.Entity.SetValue(new LookupItem() { Name = "pricelevelid", Value = "France Cost Rates" });
+                    xrmApp.CommandBar.ClickCommand("Save");
+                    //xrmApp.ThinkTime(4000);
 
                     int totalEquCnt = HelperMethods.GetSubGridItemsCount(xrmApp, client, "opportunityproductsGrid", 2000, HelperMethods.GridType.pcfGrid);
                     xrmApp.ThinkTime(2000);
                     Assert.IsTrue(totalEquCnt >= 0);
 
                     test.Log(Status.Info, "Products added");
+
                     xrmApp.Entity.SelectTab("Quotes");
                     HelperMethods.Clickcommands(xrmApp, client, Commands.NewQuoteFromQuoteTab);
                     test.Log(Status.Info, "Create New Quote");
@@ -78,7 +81,7 @@ namespace Microsoft.Dynamics365.UIAutomation.Sample.UCI.Create
                     HelperMethods.WaitForInvisibilityOfProgressIndicator(xrmApp, client);
                     xrmApp.CommandBar.ClickCommand("Create Invoice");
                     test.Log(Status.Info, "Create Invoice");
-                    HelperMethods.ScreenShot(xrmApp, client, "G. Create Invoice", childFolderPath);
+                    HelperMethods.ScreenShot(xrmApp, client, "G.Invoice Created", childFolderPath);
                     var isCreated = HelperMethods.FindElementXpath_notificationWrapper(xrmApp, client);
                     HelperMethods.WaitForInvisibilityOfProgressIndicator(xrmApp, client);
                     if (isCreated.Count != 0)
@@ -90,7 +93,7 @@ namespace Microsoft.Dynamics365.UIAutomation.Sample.UCI.Create
                     xrmApp.ThinkTime(4000);
                     HelperMethods.ClickCommand(xrmApp, client, "Confirm Invoice");
                     test.Log(Status.Info, "Confirm Invoice");
-                    HelperMethods.ScreenShot(xrmApp, client, "H. Confirm Invoice", childFolderPath);
+                    HelperMethods.ScreenShot(xrmApp, client, "H.Confirm Invoice", childFolderPath);
                     xrmApp.ThinkTime(4000);
                     HelperMethods.ClickCommand(xrmApp, client, "Invoice Paid");
                     test.Log(Status.Info, "Invoice Paid");
@@ -100,9 +103,9 @@ namespace Microsoft.Dynamics365.UIAutomation.Sample.UCI.Create
                     HelperMethods.ShowLayoutCancel(xrmApp, client);
                     xrmApp.ThinkTime(5000);
 
-                    ////HelperMethods.Grid_SwitchView(xrmApp, client, "All Opportunities");
-                    ////HelperMethods.WaitForInvisibilityOfProgressIndicator(xrmApp, client);
-                    ////HelperMethods.OpenFirstRecord(xrmApp, client);
+                    //HelperMethods.Grid_SwitchView(xrmApp, client, "All Opportunities");
+                    //HelperMethods.WaitForInvisibilityOfProgressIndicator(xrmApp, client);
+                    //////HelperMethods.OpenFirstRecord(xrmApp, client);
                     
                     HelperMethods.CopyScreenShotsIntoWord(xrmApp, client, childFolderPath, "CopyScreenshotsIntoWord");
                     test.Log(Status.Pass, "Sales Process Completed");
