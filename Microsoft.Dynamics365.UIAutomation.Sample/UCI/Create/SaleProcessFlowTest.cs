@@ -31,12 +31,15 @@ namespace Microsoft.Dynamics365.UIAutomation.Sample.UCI.Create
                     string path = Directory.CreateDirectory(childFolderPath).ToString();
 
                     test.Log(Status.Info, "Loading Chrome Browser");
+
                     xrmApp.OnlineLogin.Login(_xrmUri, _username, _password, _mfaSecretKey);
                     test.Log(Status.Info, Info.login);
                     HelperMethods.ScreenShot(xrmApp, client, Info.login, childFolderPath);
+
                     xrmApp.Navigation.OpenApp(UCIAppName.Sales);
                     test.Log(Status.Info, Info.OpenSales);
                     HelperMethods.ScreenShot(xrmApp, client, Info.OpenSales, childFolderPath);
+
                     xrmApp.Navigation.OpenSubArea("Sales", "Leads");
                     test.Log(Status.Info, "Navigating to lead");
                     xrmApp.CommandBar.ClickCommand("New");

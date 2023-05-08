@@ -381,6 +381,7 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
         {
             ThinkTime(thinkTime);
 
+
             return Execute(GetOptions($"Open App {appName}"), driver =>
             {
                 driver.WaitForPageToLoad();
@@ -388,7 +389,7 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
 
                 var query = GetUrlQueryParams(driver.Url);
                 bool isSomeAppOpen = query.Get("appid") != null || query.Get("app") != null;
-
+                driver.WaitUntilVisible(By.XPath("//button[@aria-label='Sign in']")).Click();
                 bool success = false;
                 if (!isSomeAppOpen)
                     success = TryToClickInAppTile(appName, driver);
@@ -400,6 +401,8 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
                     throw new InvalidOperationException($"App Name {appName} not found.");
 
                 InitializeModes();
+               
+
 
                 // Wait for app page elements to be visible (shell and sitemapLauncherButton)
                 var shell = driver.WaitUntilVisible(By.XPath(AppElements.Xpath[AppReference.Application.Shell]));
@@ -519,6 +522,7 @@ namespace Microsoft.Dynamics365.UIAutomation.Api.UCI
             {
                 //If the subarea is already in the left hand nav, click it
                 var success = TryOpenSubArea(driver, subarea);
+                driver.WaitUntilVisible(By.XPath("//button[@aria-label='Sign in']")).Click();
                 if (!success)
                 {
                     success = TryOpenArea(area);

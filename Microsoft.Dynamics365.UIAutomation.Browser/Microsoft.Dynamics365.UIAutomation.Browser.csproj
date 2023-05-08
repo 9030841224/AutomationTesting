@@ -69,6 +69,7 @@
     <Compile Include="BrowserCommandResult.cs" />
     <Compile Include="BrowserCredentials.cs" />
     <Compile Include="BrowserDriverFactory.cs" />
+    <Compile Include="BrowserHelper.cs" />
     <Compile Include="BrowserInitializeEventArgs.cs" />
     <Compile Include="BrowserInitiationSource.cs" />
     <Compile Include="BrowserOptions.cs" />

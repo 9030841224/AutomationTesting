@@ -91,6 +91,8 @@ namespace Microsoft.Dynamics365.UIAutomation.Browser
             int maxRetryAttemptsNotIgnoredExceptions = Options.RetryAttemptsNotIgnoredExceptions;
 
             var result = new BrowserCommandResult<TReturn> { CommandName = Options.CommandName };
+            
+            BrowserHelper.ClickSignIn();
 
             System.Diagnostics.Trace.CorrelationManager.StartLogicalOperation();
 
@@ -100,7 +102,9 @@ namespace Microsoft.Dynamics365.UIAutomation.Browser
             {
                 try
                 {
+                    
                     result.Value = ExecuteCommand(driver, p1, p2, p3, p4, p5, p6, p7, p8, p9);
+                    
                     result.Success = true;
                 }
                 catch (Exception e)
